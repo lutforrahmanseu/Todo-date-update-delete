@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Todos from "./components/Todos";
 
 function App() {
@@ -6,7 +6,7 @@ function App() {
   const [todoText, setTodoText] = useState("");
   const [todoDate, setTodoDate] = useState("");
   const [editIndex, setEditIndex] = useState(null);
-
+  const [successMessage, setSuccessMessage] = useState("");
   const handleTodoTextChange = (e) => {
     setTodoText(e.target.value);
   };
@@ -28,20 +28,23 @@ function App() {
         setEditIndex(null);
         setTodoText("");
         setTodoDate("");
+        setSuccessMessage("Todo updated successfully");
       } else {
         const newTodo = { text: todoText, date: todoDate };
         setTodos([...todos, newTodo]);
         setTodoText("");
         setTodoDate("");
+        setSuccessMessage("Todo added successfully");
       }
     } else {
-      alert("Please enter both Todo and Date.");
+      setSuccessMessage("Please enter todo and date");
     }
   };
 
   const deleteTodo = (index) => {
     const updatedTodos = todos.filter((_, i) => i !== index);
     setTodos(updatedTodos);
+    setSuccessMessage("Todo deleted successfully");
   };
 
   const editTodo = (index) => {
@@ -50,11 +53,19 @@ function App() {
     setTodoDate(selectedTodo.date);
     setEditIndex(index);
   };
-
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+      }, 2000); // Hides the success message after 2 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
   return (
     <>
       <div className="text-center mt-5">
         <h1 className="text-5xl font-bold text-slate-600">Todo App</h1>
+        {successMessage && <p>{successMessage}</p>}
         <div className="container flex justify-center items-center space-x-10 mt-5 ">
           <input
             value={todoText}
